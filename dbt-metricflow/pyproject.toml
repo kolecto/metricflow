@@ -66,6 +66,9 @@ dbt-snowflake = [
 dbt-trino = [
   "requirements-files/requirements-dbt-trino.txt"
 ]
+dbt-athena = [
+  "requirements-files/requirements-dbt-athena.txt"
+]
 dev-env-requirements = [
   "../metricflow-semantics/requirements-files/dev-env-requirements.txt",
   "requirements-files/dev-env-requirements.txt"

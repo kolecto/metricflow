@@ -25,6 +25,25 @@ POPULATE_PERSISTENT_SOURCE_SCHEMA = $(TESTS_METRICFLOW)/source_schema_tools.py::
 install-hatch:
 	pip3 install hatch
 
+# Build metricflow package (creates wheel and sdist in dist/, includes metricflow_semantics)
+.PHONY: build
+build:
+	hatch build
+
+# Build dbt-metricflow package (creates wheel and sdist in dbt-metricflow/dist/)
+.PHONY: build-dbt-metricflow
+build-dbt-metricflow:
+	cd dbt-metricflow && hatch build
+
+# Build metricflow + dbt-metricflow, then install for local CLI use.
+# Install both in one pip command so the local metricflow (with dbt-semantic-interfaces==0.9.4.dev2)
+# is used instead of PyPI's metricflow (which pins 0.9.4.dev0 and conflicts with dbt-core).
+.PHONY: install-local
+install-local:
+	$(MAKE) build
+	$(MAKE) build-dbt-metricflow
+	pip install $$(ls dist/metricflow-*.whl | head -1) "$$(ls dbt-metricflow/dist/dbt_metricflow-*.whl | head -1)[dbt-athena]"
+
 .PHONY: perf
 perf:
 	hatch -v run dev-env:pytest -vv -n 1 $(ADDITIONAL_PYTEST_OPTIONS) --output-json $(PERFORMANCE_OUTPUT_FILE) $(TESTS_PERFORMANCE)/
